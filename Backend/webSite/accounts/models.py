@@ -17,11 +17,11 @@ class MyAccountManager(BaseUserManager):
         )
 
         user.set_password(password)
-        user.save(using=self.db)
+        user.save(using=self._db)
         return user
     
 # this is for creating super user
-    def create_superUser(self,first_name,last_name,email,username,password):
+    def create_superuser(self,first_name,last_name,email,username,password):
         user = self.create_user(
             email = self.normalize_email(email),
             username = username,
@@ -42,6 +42,7 @@ class MyAccountManager(BaseUserManager):
 class Account(AbstractBaseUser):
     first_name=models.CharField(max_length=50,blank=False)
     last_name=models.CharField(max_length=50,blank=False)
+    username = models.CharField(max_length=50, unique=True)
     email=models.EmailField(max_length=100,blank=False,unique=True)
     phone_number=models.CharField(max_length=50,blank=False,unique=True)
 
@@ -63,8 +64,8 @@ class Account(AbstractBaseUser):
         return self.email
     
     # if the user is admin he has all the permission to change the thing 
-    def has_perm(self,perm,obj=None):
+    def has_perm(self,perm,obj=None):# perm should singular
         return self.is_admin
     # permission
-    def has_module_perm(self,add_label):
+    def has_module_perms(self,app_label):
         return True
