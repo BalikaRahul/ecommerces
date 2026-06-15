@@ -1,5 +1,6 @@
 from django.db import models
 from category.models import Category
+from django.urls import reverse
 
 # Create your models here.
 class Product(models.Model):
@@ -10,9 +11,14 @@ class Product(models.Model):
     images = models.ImageField(upload_to='photos/products')
     stock=models.IntegerField()
     is_avaliable= models.BooleanField(default=True)
-    category=models.ForeignKey(Category,on_delete = models.CASCADE)
+    category=models.ForeignKey(Category,on_delete = models.CASCADE)# cascade means if we delete category it will delete the products belongs to that category
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
+    def get_url(self):
+        return reverse(
+            'product_detail',
+            args=[self.category.slug, self.slug]
+        )
 
     def __str__(self):
         return self.product_name
