@@ -5,4 +5,7 @@ from .models import Category
 class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields={'slug':('category_name',)}
     list_display =('category_name','slug') # this to auto fill the slug when enter the category of the product
+
+
+    
 admin.site.register(Category,CategoryAdmin)
