@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect,get_object_or_404
 from .models import Cart,CartItem
 from store.models import Product
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 def _cart_id(request):# to get the session id because session id equal to cart id 
@@ -61,7 +62,7 @@ def cart(request,total =0, quantity =0, cart_items=None):
         
         tax = (2 *total)/100
         grand_total=total+tax
-    except Cart.DoesNotExist:
+    except ObjectDoesNotExist:
         pass
     context={
         'total':total,
