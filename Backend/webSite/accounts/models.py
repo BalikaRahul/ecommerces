@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractBaseUser,BaseUserManager
 # Create your models here.
 # this is for creating normal user
 class MyAccountManager(BaseUserManager):
-    def create_user(self,first_name,last_name,username,email,password=None):
+    def create_user(self,first_name,last_name,username,email,phone_number,password=None):
         if not email:
             raise ValueError('user must has an email address')
         if not username:
@@ -13,7 +13,8 @@ class MyAccountManager(BaseUserManager):
             email =self.normalize_email(email), #normalize_email is used in case if the user enter the email in upper case it will convert it into small case
             username =username,
             first_name= first_name,
-            last_name = last_name
+            last_name = last_name,
+            phone_number=phone_number,
         )
 
         user.set_password(password)
@@ -21,13 +22,14 @@ class MyAccountManager(BaseUserManager):
         return user
     
 # this is for creating super user
-    def create_superuser(self,first_name,last_name,email,username,password):
+    def create_superuser(self,first_name,last_name,email,username,phone_number,password):
         user = self.create_user(
             email = self.normalize_email(email),
             username = username,
             password =password,
             first_name = first_name,
             last_name=last_name,
+            phone_number=phone_number,
         )
 # permission for the superuser
         user.is_admin =True
@@ -56,7 +58,7 @@ class Account(AbstractBaseUser):
 
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username','first_name','last_name']
+    REQUIRED_FIELDS = ['username','first_name','last_name','phone_number']
     objects = MyAccountManager()
     
     # shows the email 

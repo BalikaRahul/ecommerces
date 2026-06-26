@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product
+from .models import Product,Variation
 
 
 class ProductAdmin(admin.ModelAdmin):
@@ -9,3 +9,8 @@ class ProductAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin.site.register(Product,ProductAdmin) #to automate the slug need the call the object
+class VariationAdmin(admin.ModelAdmin):
+    list_display=('Product','variation_category','variation_value','is_active')
+    list_editable=('is_active',)
+    list_filter=('Product','variation_category','variation_value',)
+admin.site.register(Variation,VariationAdmin)
