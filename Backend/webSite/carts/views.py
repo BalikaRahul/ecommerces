@@ -11,16 +11,18 @@ def _cart_id(request):# to get the session id because session id equal to cart i
         cart=request.session.session_key
     return cart
 def add_cart(request,product_id):
+    product=Product.objects.get(id=product_id)#to get the product
+    product_variation=[]
     if request.method =="POST":
         for item in request.POST:
             key=item
             value=request.POST[key]
             try:
-                variation = Variation.objects.get(variation_category_iexact=key,variation_value__iexact=value)
-            except:
+                variation = Variation.objects.get(variation_category__iexact=key,variation_value__iexact=value)
+                product_variation.append(variation)
+            except Variation.DoesNotExist:
                 pass
-    return 
-    product=Product.objects.get(id=product_id)#to get the product
+
     try:
         cart=Cart.objects.get(cart_id=_cart_id(request))#get the cart using the cart_id present in the session
     except Cart.DoesNotExist:
