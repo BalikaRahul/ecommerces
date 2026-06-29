@@ -37,8 +37,12 @@ def add_cart(request, product_id):
 
     # Determine if a cart item with the same product & variation already exists
     existing_item = None
+
     for item in CartItem.objects.filter(product=product, cart=cart):
-        if list(item.variations.all()) == product_variation:
+        existing_variations = list(item.variations.values_list('id', flat=True))
+        current_variations = [v.id for v in product_variation]
+
+        if sorted(existing_variations) == sorted(current_variations):
             existing_item = item
             break
 
@@ -53,27 +57,27 @@ def add_cart(request, product_id):
     return redirect('cart')
 
 
-def remove_cart(request, product_id):
+def remove_cart(request, product_id,cart_item_id):
     """Decrease quantity of a cart item or remove it if quantity becomes zero."""
+    # Retrieve the cart; if it doesn't exist, simply redirect.
     cart = Cart.objects.get(cart_id=_cart_id(request))
+
     product = get_object_or_404(Product, id=product_id)
-    cart_item = CartItem.objects.get(product=product, cart=cart)
-    if cart_item.quantity > 1:
-        cart_item.quantity -= 1
-        cart_item.save()
-    else:
-        cart_item.delete()
+    try:
+
+        cart_item = CartItem.objects.get(product=product, cart=cart,id=cart_item_id)
+
+        if cart_item.quantity > 1:
+            cart_item.quantity -= 1
+            cart_item.save()
+        else:
+            cart_item.delete()
+    except:
+        pass
     return redirect('cart')
 
 
 def remove_cart_item(request, product_id):
-    """Remove all cart items for the given product regardless of quantity.
-
-    Previously this used ``CartItem.objects.get`` which raised ``MultipleObjectsReturned``
-    when more than one ``CartItem`` existed for the same product (e.g., duplicate
-    entries created by earlier bugs). Using ``filter(...).delete()`` safely removes
-    all matching rows.
-    """
     cart = Cart.objects.get(cart_id=_cart_id(request))
     product = get_object_or_404(Product, id=product_id)
     # Delete all matching items to avoid MultipleObjectsReturned
