@@ -25,6 +25,7 @@ def add_cart(request, product_id):
         for key, value in request.POST.items():
             try:
                 variation = Variation.objects.get(
+                    Product=product,
                     variation_category__iexact=key,
                     variation_value__iexact=value,
                 )
@@ -77,11 +78,11 @@ def remove_cart(request, product_id,cart_item_id):
     return redirect('cart')
 
 
-def remove_cart_item(request, product_id):
+def remove_cart_item(request, product_id, cart_item_id):
     cart = Cart.objects.get(cart_id=_cart_id(request))
     product = get_object_or_404(Product, id=product_id)
-    # Delete all matching items to avoid MultipleObjectsReturned
-    CartItem.objects.filter(product=product, cart=cart).delete()
+    cart_item = get_object_or_404(CartItem, product=product, cart=cart, id=cart_item_id)
+    cart_item.delete()
     return redirect('cart')
 
 
